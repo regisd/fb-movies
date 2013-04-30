@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+    <title></title>
+</head>
+<body>
+<fb:login-button id="fb_login_button" autologoutlink="true" size="large"></fb:login-button>
+
+<form id="process_form">
+    <label for="rating_history">Rating history</label>
+    <input type="file" name="rating_history" id="rating_history"/>
+    <input type="submit"/>
+</form>
+
+
+<div id="fb-root"></div>
+<script>
+    // callback when the user is connected on Facebook
+    user_connected = function () {
+        // fb-login is auto login/logout
+        // $("#fb_login_button").hide();
+        $('#process_form').show();
+
+    }
+
+    window.fbAsyncInit = function () {
+        // init the FB JS SDK
+        FB.init({
+            appId: '608738222470406',                        // App ID from the app dashboard
+            channelUrl: '//fb-movies.appspot.com/page/channel.html',   // Channel file for x-domain comms
+            status: true,                                     // Check Facebook Login status
+            xfbml: true                                      // Look for social plugins on the page
+        });
+
+        // Additional initialization code such as adding Event Listeners goes here
+        FB.Event.subscribe('auth.login',
+                function (response) {
+                    user_connected();
+                }
+        );
+        FB.Event.subscribe('auth.authResponseChange', function (response) {
+            // alert('The status of the session is: ' + response.status);
+            if (response.status === 'connected') {
+                user_connected();
+            }
+        });
+    };
+</script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#process_form').hide();
+
+        // Load the SDK asynchronously
+        //TODO Locale
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/fr_FR/all.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    });
+</script>
+</body>
+</html>
