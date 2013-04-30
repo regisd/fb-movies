@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:fb="http://www.facebook.com/2008/fbml">
 <head>
-    <title></title>
+    <title>Movies importer into Facebook</title>
 </head>
 <body>
 <fb:login-button id="fb_login_button" autologoutlink="true" size="large"></fb:login-button>
 
-<form id="process_form">
-    <label for="rating_history">Rating history</label>
+<h1>Import your IMDb rating history</h1>
+
+<p>
+    Go on your IMDb rating history.
+    At the bottom of the page, use "Export this list" to download the CSV file.
+    Use the downloaded file in the form bellow and submit.
+</p>
+
+<form id="process_form" method="post" action="/imdb" enctype="multipart/form-data">
+    <label for="rating_history">Rating history (CSV export)</label>
     <input type="file" name="rating_history" id="rating_history"/>
     <input type="submit"/>
 </form>
-
 
 <div id="fb-root"></div>
 <script>

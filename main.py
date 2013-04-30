@@ -15,11 +15,12 @@
 # limitations under the License.
 #
 import webapp2
-
+import imdb
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.redirect("/page/index.html")
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/imdb', imdb.ImdbImporter)
 ], debug=True)
