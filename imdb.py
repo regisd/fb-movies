@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
+import json
+
 __author__ = "Régis Décamps"
 import webapp2
 import csv
@@ -19,21 +21,37 @@ class ImdbImporter(webapp2.RequestHandler):
         o.write('<p>Importing&hellip;</p><ul>')
         for rating in csv:
             o.write('<li><a href="{url}">{title}</a> {note}/10</li>'.format(title=rating.film.title, note=rating.score,
-                                                                            url=rating.film.url))
+                                                                        url=rating.film.id))
             fb_post_rating(rating, self.request.get('access_token'))
         o.write('</ul>')
         o.write('This ratings will appear shortly on your Facebook timeline')
 
 
-def fb_post_rating(rating, access_token):
+def fb_find_film(rating):
+    ''' replace the film ID by the first result of fb search on the tiltle '''
+    fields = {'q': rating.film.title, 'type': 'page'}
+    data = urllib.urlencode(fields)
+    result = urlfetch.fetch(url='http://graph.facebook.com/search?'+data)
+    if result.status_code == 200:
+        content = json.loads(result.content)
+        candidate_films = content['data']
+        for page in candidate_films:
+            if page['category'] == 'Movie':
+                rating.film.id = page['id']
+                break
+    else:
+        print(result.content)
 
+
+def fb_post_rating(rating, access_token):
+    fb_find_film(rating)
 
     fields = {'access_token': access_token,
               'method': 'POST',
               'rating:value': rating.score,
               'rating:scale': rating.scale,
               'rating:normalized_value': rating.normalized_rating,
-              'movie': rating.film.url}
+              'movie': rating.film.id}
     data = urllib.urlencode(fields)
     result = urlfetch.fetch(url='https://graph.facebook.com/me/video.rates',
                             payload=data,
@@ -60,7 +78,13 @@ class ImdbCsvReader(object):
 
 
 if __name__ == '__main__':
+    from google.appengine.api import apiproxy_stub_map, urlfetch_stub
+
+    apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap()
+    apiproxy_stub_map.apiproxy.RegisterStub('urlfetch',
+    urlfetch_stub.URLFetchServiceStub())
     with open('test/film rating history.csv', 'r') as file:
         csv = ImdbCsvReader(file)
         for rating in csv:
-            print('{rating} {url}'.format(rating=rating, url=rating.film.url))
+            fb_find_film(rating)
+            print('{rating} {url}'.format(rating=rating, url=rating.film.id))
