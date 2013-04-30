@@ -4,7 +4,7 @@
     <title>Movies importer into Facebook</title>
 </head>
 <body>
-<fb:login-button id="fb_login_button" autologoutlink="true" size="large"></fb:login-button>
+<fb:login-button id="fb_login_button" scope="publish_actions" autologoutlink="true" size="large"></fb:login-button>
 
 <h1>Import your IMDb rating history</h1>
 
@@ -17,17 +17,18 @@
 <form id="process_form" method="post" action="/imdb" enctype="multipart/form-data">
     <label for="rating_history">Rating history (CSV export)</label>
     <input type="file" name="rating_history" id="rating_history"/>
+    <input type="access_token" type="hidden" id="access_token"/>
     <input type="submit"/>
 </form>
 
 <div id="fb-root"></div>
 <script>
     // callback when the user is connected on Facebook
-    user_connected = function () {
+    user_connected = function (response) {
         // fb-login is auto login/logout
         // $("#fb_login_button").hide();
         $('#process_form').show();
-
+        $('#access_token').attr('value',response['authResponse']['accessToken']);
     }
 
     window.fbAsyncInit = function () {
@@ -42,13 +43,13 @@
         // Additional initialization code such as adding Event Listeners goes here
         FB.Event.subscribe('auth.login',
                 function (response) {
-                    user_connected();
+                    user_connected(response);
                 }
         );
         FB.Event.subscribe('auth.authResponseChange', function (response) {
             // alert('The status of the session is: ' + response.status);
             if (response.status === 'connected') {
-                user_connected();
+                user_connected(response);
             }
         });
     };
