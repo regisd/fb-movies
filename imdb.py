@@ -8,7 +8,6 @@ import csv
 from model import Film, Rating
 import urllib
 
-
 from google.appengine.api import urlfetch
 
 EXPECTED_FIRST_LINE = '"position","const","created","modified","description","Title","Title type","Directors","You rated","IMDb Rating","Runtime (mins)","Year","Genres","Num. Votes","Release Date (month/day/year)","URL"'
@@ -18,20 +17,36 @@ class ImdbImporter(webapp2.RequestHandler):
     def post(self):
         csv = ImdbCsvReader(self.request.POST.multi['rating_history'].file)
         o = self.response.out
-        o.write('<p>Importing&hellip;</p><ul>')
+        o.write("<p>You have imported</p><ul>")
         for rating in csv:
-            o.write('<li><a href="{url}">{title}</a> {note}/10</li>'.format(title=rating.film.title, note=rating.score,
-                                                                        url=rating.film.id))
-            fb_post_rating(rating, self.request.get('access_token'))
+            response = fb_post_rating(rating, self.request.get('access_token'))
+            o.write('<li><a href="{url}">{title}</a> {note}/10'.format(title=rating.film.title, note=rating.score,
+                                                                       url=rating.film.id))
+            o.write('<!-- [' + str(response.status_code) + '] ' + response.content + ' -->')
+            if response.status_code == 200:
+                if rating.film.id.startswith('http'):
+                    o.write("<span class='error'>Film not found on Facebook</span>")
+                else:
+                    content = json.loads(response.content)
+                    if 'error' in content:
+                        o.write("<span class='error'>")
+                        o.write(content.get('error').get('message'))
+                        o.write("</span>")
+                    else:
+                        o.write("<span class='success'/>")
+            else:
+                o.write("<span class='error'>ERROR {code}</span>".format(code=response.status.code))
+            o.write("</li>")
+
         o.write('</ul>')
         o.write('This ratings will appear shortly on your Facebook timeline')
 
 
 def fb_find_film(rating):
     ''' replace the film ID by the first result of fb search on the tiltle '''
-    fields = {'q': rating.film.title, 'type': 'page'}
+    fields = {'q': rating.film.title + ' ' + rating.film.director, 'type': 'page'}
     data = urllib.urlencode(fields)
-    result = urlfetch.fetch(url='http://graph.facebook.com/search?'+data)
+    result = urlfetch.fetch(url='http://graph.facebook.com/search?' + data)
     if result.status_code == 200:
         content = json.loads(result.content)
         candidate_films = content['data']
@@ -53,6 +68,7 @@ def fb_post_rating(rating, access_token):
               'rating:normalized_value': rating.normalized_rating,
               'movie': rating.film.id}
     data = urllib.urlencode(fields)
+    print(data)
     result = urlfetch.fetch(url='https://graph.facebook.com/me/video.rates',
                             payload=data,
                             method=urlfetch.POST,
@@ -72,7 +88,7 @@ class ImdbCsvReader(object):
 
     def next(self):
         data = self.csv.next()
-        film = Film(data[5], data[15])
+        film = Film(data[5], data[7], data[15])
         rating = Rating(film, data[8])
         return rating
 
@@ -82,7 +98,7 @@ if __name__ == '__main__':
 
     apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap()
     apiproxy_stub_map.apiproxy.RegisterStub('urlfetch',
-    urlfetch_stub.URLFetchServiceStub())
+                                            urlfetch_stub.URLFetchServiceStub())
     with open('test/film rating history.csv', 'r') as file:
         csv = ImdbCsvReader(file)
         for rating in csv:

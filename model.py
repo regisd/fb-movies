@@ -5,8 +5,9 @@ from datetime import datetime
 
 
 class Film(object):
-    def __init__(self, title, id):
+    def __init__(self, title, director, id):
         self.title = title
+        self.director = director
         # can be the URL of an opengraph objector a fb id
         self.id = id
         self.time_length = 0
