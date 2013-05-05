@@ -29,7 +29,7 @@ class Rating(db.Model):
     user_id = db.IntegerProperty()
     film = db.ReferenceProperty(Film)
     score = db.FloatProperty()
-    scale = db.FloatProperty()
+    scale = db.IntegerProperty()
     normalized_rating = db.FloatProperty()
     created_time = db.DateTimeProperty(auto_now=True)
 
@@ -37,7 +37,7 @@ class Rating(db.Model):
         return '{film} ({score}/{scale})'.format(film=self.film, score=self.score, scale=self.scale,
                                                  norm_rating=self.normalized_rating)
 
-def build_Rating(fb_user_id,  film, score, scale=10.):
+def build_Rating(fb_user_id,  film, score, scale=10):
     rating = Rating()
     rating.user_id = fb_user_id
     rating.film = film
