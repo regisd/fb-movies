@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
+from copy import copy
+
 __author__ = "Régis Décamps"
 import json
 import logging
@@ -59,6 +61,9 @@ def post_rating(rating, access_token):
                             method=urlfetch.POST,
                             headers={'Content-Type': 'application/x-www-form-urlencoded'})
     logging.debug("Result {status} for {data}".format(status=result.status_code, data=fields))
+    if result.status_code != 200:
+        logging.error(data)
+        logging.error(result.content)
     return result
 
 
@@ -69,5 +74,10 @@ def urlencode_utf8(params):
     '''
     Python27 urllib doesn't support unicode
     '''
-    encoded_dict = dict((k, v.encode('UTF-8')) for k, v in params.items() if isinstance(v, basestring))
+    encoded_dict = {}
+    for k,v in params.items():
+        if isinstance(v, basestring):
+            encoded_dict[k] = v.encode('UTF-8')
+        else:
+            encoded_dict[k] = v
     return urllib.urlencode(encoded_dict)

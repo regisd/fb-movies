@@ -55,7 +55,13 @@ class ImdbImporter(webapp2.RequestHandler):
             else:
                 imp.status = 'error'
                 imp.status_msg = response.status_code
-
+                try:
+                    content = json.loads(response.content)
+                    if 'error' in content:
+                        error_msg = content.get('error').get('message')
+                        logging.error(error_msg)
+                except Exception as e:
+                    logging.error(content)
         values = {'list_imports': imported}
         path = os.path.join(os.path.dirname(__file__), 'templates/imported.html')
         self.response.out.write(template.render(path, values))
