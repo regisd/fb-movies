@@ -2,25 +2,92 @@
 <html xmlns:fb="http://www.facebook.com/2008/fbml">
 <head>
     <title>Movies importer into Facebook</title>
+    <link
+            href='//fonts.googleapis.com/css?family=Droid+Sans|Philosopher'
+            rel='stylesheet' type='text/css'/>
+    <link href="fbmovies.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-<fb:login-button id="fb_login_button" scope="publish_actions" autologoutlink="true" size="large"></fb:login-button>
+<div id="header">
+    <div id="identifier">
+        <h1 class="title">
+            <span id="name">Movie importer</span><br/>
+            <span id="title">Import your IMDb rating history in your facebook timeline</span>
+        </h1>
+    </div>
+    <div id="navbar">
+        <ul>
+            <li><a href="#content-howto"
+                   onclick="update_content(this); return false;">Howto</a></li>
+            <li><a href="#content-about"
+                   onclick="update_content(this); return false;">About</a></li>
+            <li><a href="#content-privacy"
+                   onclick="update_content(this); return false;">Privacy policy</a></li>
+        </ul>
+        <fb:login-button id="fb_login_button" scope="publish_actions" autologoutlink="true"
+                         size="large"></fb:login-button>
+    </div>
 
-<h1>Import your IMDb rating history</h1>
+</div>
 
-<p>
-    Go on your IMDb rating history.
-    At the bottom of the page, use "Export this list" to download the CSV file.
-    Use the downloaded file in the form bellow and submit.
-</p>
+<div id="content" class="content">
+    <div id="content-howto">
+        <h2>How to import your imdb history</h2>
 
-<form id="process_form" method="post" action="/imdb" enctype="multipart/form-data">
-    <label for="rating_history">Rating history (CSV export)</label>
-    <input type="file" name="rating_history" id="rating_history"/>
-    <input type="hidden" id="access_token" name="fb_access_token"/>
-    <input type="hidden" id="user_id" name="fb_user_id"/>
-    <input type="submit"/>
-</form>
+        <h3 class="bullet">
+            <span class="bullet-content">It's easy</span>
+        </h3>
+
+        <ol>
+            <li>
+                Open <a href="http://www.imdb.com/list/ratings‎">your IMDb rating history</a>.
+            </li>
+            <li>
+                At the bottom of the page, use "Export this list" to download a CSV file containing all your rating
+                history.
+                <img src="/images/screenshot-imdb-export.png" width="600" height="153" alt="Screenshot"
+                     title="Select export this list on IMDb Rating history"/>
+            </li>
+            <li id="howto_login">
+                Log in with
+                <fb:login-button scope="publish_actions"
+                                 size="medium"></fb:login-button>
+            </li>
+            <li>
+                Use the downloaded file in the form bellow and submit.
+            </li>
+        </ol>
+
+        <form id="process_form" method="post" action="/imdb" enctype="multipart/form-data">
+            <label for="rating_history">Rating history (CSV export)</label>
+            <input type="file" name="rating_history" id="rating_history"/>
+            <input type="hidden" id="access_token" name="fb_access_token"/>
+            <input type="hidden" id="user_id" name="fb_user_id"/>
+            <input type="submit"/>
+        </form>
+    </div>
+    <div id="content-about">
+        <h2>About</h2>
+    </div>
+    <div id="content-privacy">
+        <h2>Privacy policy</h2>
+
+        <h3 class="bullet">
+            <span class="bullet-content">Your privacy is import to us</span>
+        </h3>
+
+        <p>This application does not retrieve your Facebook details, such as your name or the list of your friends.</p>
+
+        <p>This application ask permission to post on your timeline, so it can post your rating history.
+            This application will store all your ratings under your facebook ID, in order to not submit again
+            the same reviews. </p>
+
+        <p>The data is hosted on Google app engine, and is therefore indirectly subject to <a
+                href="http://www.google.com/policies/privacy/">Google privacy policy</a>.</p>
+
+        <p>The application will not sell your ratings to third-parties.</p>
+    </div>
+</div>
 
 <div id="fb-root"></div>
 <script>
@@ -31,6 +98,7 @@
         $('#process_form').show();
         $('#access_token').attr('value', response['authResponse']['accessToken']);
         $('#user_id').attr('value', response['authResponse'['userID']])
+        $('#howto_login').hide();
     }
 
     window.fbAsyncInit = function () {
@@ -56,9 +124,11 @@
         });
     };
 </script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        show_initial_tab();
+
         $('#process_form').hide();
 
         // Load the SDK asynchronously
@@ -74,6 +144,33 @@
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
     });
+
+    function show_initial_tab() {
+        var hash_pos = document.URL.indexOf("#");
+        var anchor = "content-howto";
+        if (hash_pos > 1) {
+            anchor = document.URL.substring(hash_pos + 1);
+        }
+        show_content('#' + anchor);
+    }
+
+    function update_content(ahref) {
+        show_content(ahref.hash);
+        $(ahref).addClass('activated');
+        $('.bullet').css('display', 'none');
+        $('.bullet').slideDown();
+    }
+
+    function show_content(jq_div) {
+        /* hide all content */
+        $('#content').contents().css('display', 'none');
+        $('#navbar>ul>li>a').removeClass('activated')
+        /* display only the appropriate content */
+        $(jq_div).css('display', 'block');
+        $('#navbar>ul>li>a[href="' + jq_div + '"]').addClass('activated');
+    }
+
 </script>
+
 </body>
 </html>
