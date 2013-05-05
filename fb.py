@@ -82,7 +82,7 @@ def post_watch(rating, access_token):
               'start_time': rating.created_time.isoformat(),
               'expires_in': rating.film.runtime * 60,
               #'review': 'http://fb-movies.appspot.com/rating/'+str(rating.key().id()),
-              'movie': rating.film.fb_id if rating.film.fb_id else rating.film.imdb_url,
+              rating.film.type: rating.film.fb_id if rating.film.fb_id else rating.film.imdb_url,
               'publish_time': rating.created_time.isoformat()}
     data = urlencode_utf8(fields)
     result = urlfetch.fetch(url='https://graph.facebook.com/me/video.watches',

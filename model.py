@@ -4,12 +4,15 @@ __author__ = "Régis Décamps"
 from datetime import datetime
 
 from google.appengine.ext import db
-
+import db_extra
 
 class Film(db.Model):
     '''
-    A movie, probably known by Facebook
+    A movie, probably known by Facebook.
+
+    FIXME Rename: This can actually be a TV show or other too.
     '''
+    type = db.StringProperty()
     title = db.StringProperty()
     director = db.StringProperty()
     fb_id = db.IntegerProperty()
@@ -20,9 +23,9 @@ class Film(db.Model):
     def __str__(self):
         return self.title
 
-
-def build_Film(title, director, runtime, imdb_url):
+def build_Film(title, type, director, runtime, imdb_url):
     film = Film()
+    film.type = type
     film.title = title
     film.director = director
     film.imdb_url = imdb_url
@@ -35,6 +38,7 @@ class Rating(db.Model):
     A rating in the application
     '''
     user_id = db.IntegerProperty()
+
     film = db.ReferenceProperty(Film)
     score = db.FloatProperty()
     scale = db.IntegerProperty()
@@ -48,7 +52,7 @@ class Rating(db.Model):
                                                  norm_rating=self.normalized_rating)
 
 
-def build_Rating(fb_user_id, film, score, created_time, scale=10):
+def build_Rating(fb_user_id,  film, score, created_time, scale=10):
     rating = Rating()
     rating.user_id = fb_user_id
     rating.film = film

@@ -42,7 +42,10 @@ class ImdbImporter(webapp2.RequestHandler):
         path = os.path.join(os.path.dirname(__file__), 'templates/imported.html')
         self.response.out.write(template.render(path, values))
 
-
+IMDB_TYPES= {
+    'Feature Film':'movie',
+    'TV Series': 'tv_shown'
+}
 class ImdbLine(object):
     def __init__(self, data):
         # csv reader doesn't handle unicode natively
@@ -59,6 +62,7 @@ class ImdbLine(object):
             # Runtime in min
 
         self.runtime = int(data[10])
+        self.type = IMDB_TYPES.get(data[6], 'other')
 
     def params(self):
         fields = {
@@ -67,7 +71,8 @@ class ImdbLine(object):
             'runtime': self.runtime,
             'url': self.url,
             'score': self.score,
-            'created_time': self.created_time.isoformat()
+            'created_time': self.created_time.isoformat(),
+            'type': self.type
         }
         return fields
 

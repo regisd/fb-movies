@@ -24,11 +24,15 @@ class ImportWorker(webapp2.RequestHandler):
         p_runtime = int(self.request.get('runtime'))
         p_score = float(self.request.get('score'))
         p_created_time = datetime.strptime(self.request.get('created_time'), DATETIME_ISO)
+        p_type = self.request.get('type')
+        if p_type is None:
+            p_type = 'other'
+            logging.warn("Worker didn't receive video type and assumes other")
 
         # search film in datastore
         film = model.Film.all().filter('imdb_url =', p_url).get()
         if film is None:
-            film = model.build_Film(p_title, p_director, p_runtime, p_url)
+            film = model.build_Film(p_title, p_type, p_director, p_runtime, p_url)
             fb.find_film(film)
             # TODO if film not found, ask cotribution
             film.put()
