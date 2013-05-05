@@ -30,6 +30,8 @@ class ImdbImporter(webapp2.RequestHandler):
         imported = []
 
         for line in csv:
+            if line is None:
+                continue
             params = line.params()
             params['fb_user_id'] = fb_user_id
             params['fb_access_token'] = fb_access_token
@@ -55,6 +57,7 @@ class ImdbLine(object):
             logging.warn("{exception} parsing {date}".format(exception=e, date=data[2]))
             self.created_time = datetime.now()
             # Runtime in min
+
         self.runtime = int(data[10])
 
     def params(self):
@@ -70,6 +73,10 @@ class ImdbLine(object):
 
 
 class ImdbCsvReader(object):
+    '''
+    Returns each ImdbLine of a IMDB CSV file.
+    Can return null if there is a parse error.
+    '''
     def __init__(self, file):
         first_line = file.readline()
         if first_line.strip() != EXPECTED_FIRST_LINE:
@@ -81,8 +88,10 @@ class ImdbCsvReader(object):
 
     def next(self):
         data = self.csv.next()
-        return ImdbLine(data)
-
+        try:
+            return ImdbLine(data)
+        except ValueError:
+            return None
 
 if __name__ == '__main__':
     from google.appengine.api import apiproxy_stub_map, urlfetch_stub, taskqueue
