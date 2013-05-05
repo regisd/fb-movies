@@ -1,26 +1,61 @@
 #!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+# -*- coding: UTF-8 -*-
+# Copyright Régis Décamps
+
+import os
+import logging
+
 import webapp2
+import webob
+from google.appengine.ext.webapp import template
+
 import imdb
+import model
+
+
+class BaseHandler(webapp2.RequestHandler):
+    def __init__(self, request=None, response=None):
+        super(BaseHandler, self).__init__(request, response)
+
+    def handle_exception(self, exception, debug):
+        if isinstance(exception, ValueError):
+            self.response.set_status(400)  # bad request
+            self.response.write(str(exception))
+        elif isinstance(exception, webob.exc.WSGIHTTPException):
+            # If the exception is a HTTPException, use its error code.
+            self.response.set_status(exception.code)
+            self.response.write(exception.html_body({}))
+        else:
+            # Otherwise use a generic 500 error code.
+
+            # Log the error because I have no idea what it is
+            logging.exception(exception)
+            self.response.set_status(500)
+            # Set a custom message.
+            self.response.write('An error occurred. ')
+        logging.warn(exception)
+        logging.warn("Caused by {cause}".format(cause=exception.args))
+
+
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.redirect("/page/index.html")
 
+
+class RatingHandler(BaseHandler):
+    def get(self, id):
+        rating = model.Rating.get_by_id(id)
+        values = {"rating": rating}
+        path = os.path.join(os.path.dirname(__file__), 'templates/rating.html')
+        self.response.out.write(template.render(path, values))
+
+
 app = webapp2.WSGIApplication([
-    ('/', MainHandler),
-    ('/imdb', imdb.ImdbImporter)
-], debug=True)
+                                  ('/', MainHandler),
+                                  ('/imdb', imdb.ImdbImporter),
+                                  webapp2.Route(r'/rating/<id:.*>', handler=RatingHandler)
+                              ], debug=True)
+
+logging.getLogger().setLevel(logging.DEBUG)
+if __name__ == '__main__':
+    app.run()

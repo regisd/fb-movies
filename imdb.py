@@ -1,79 +1,80 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-import json
 
 __author__ = "Régis Décamps"
+import os
+import logging
 import webapp2
 import csv
-from model import Film, Rating
-import urllib
-
-from google.appengine.api import urlfetch
+import json
+import model
+import fb
+from google.appengine.ext.webapp import template
 
 EXPECTED_FIRST_LINE = '"position","const","created","modified","description","Title","Title type","Directors","You rated","IMDb Rating","Runtime (mins)","Year","Genres","Num. Votes","Release Date (month/day/year)","URL"'
 
 
 class ImdbImporter(webapp2.RequestHandler):
     def post(self):
-        csv = ImdbCsvReader(self.request.POST.multi['rating_history'].file)
-        o = self.response.out
-        o.write("<p>You have imported</p><ul>")
-        for rating in csv:
-            response = fb_post_rating(rating, self.request.get('access_token'))
-            o.write('<li><a href="{url}">{title}</a> {note}/10'.format(title=rating.film.title, note=rating.score,
-                                                                       url=rating.film.id))
-            o.write('<!-- [' + str(response.status_code) + '] ' + response.content + ' -->')
+        rating_history_file = self.request.POST.multi['rating_history'].file
+        fb_access_token = self.request.get('fb_access_token')
+        fb_user_id = fb.get_user(fb_access_token)
+        logging.debug("Importing Ratings from {user}".format(user=fb_user_id))
+
+        csv = ImdbCsvReader(rating_history_file)
+        self.response.headers['Content-Type'] = 'text/html; charset=UTF-8'
+        imported = []
+
+        for line in csv:
+            # search film in datastore
+            film = model.Film.all().filter('imdb_url =', line.url).get()
+            if film is None:
+                film = model.build_Film(line.title, line.director, line.url)
+                fb.find_film(film)
+                film.put()
+
+            rating = model.build_Rating(fb_user_id, film, line.score)
+            response = fb.post_rating(rating, fb_access_token)
+            imp = ImdbImport(rating)
+            imported.append(imp)
             if response.status_code == 200:
-                if rating.film.id.startswith('http'):
-                    o.write("<span class='error'>Film not found on Facebook</span>")
+                if not rating.film.imdb_url:
+                    imp.status = 'error'
+                    imp.status_msg = "Film not found on Facebook"
                 else:
                     content = json.loads(response.content)
                     if 'error' in content:
-                        o.write("<span class='error'>")
-                        o.write(content.get('error').get('message'))
-                        o.write("</span>")
+                        imp.status = 'error'
+                        error_msg=content.get('error').get('message')
+                        imp.status_msg = error_msg
+                        logging.error(error_msg)
                     else:
-                        o.write("<span class='success'/>")
+                        # save in datastore
+                        rating.put()
+                        imp.status = 'success'
             else:
-                o.write("<span class='error'>ERROR {code}</span>".format(code=response.status.code))
-            o.write("</li>")
+                imp.status = 'error'
+                imp.status_msg = response.status_code
 
-        o.write('</ul>')
-        o.write('This ratings will appear shortly on your Facebook timeline')
-
-
-def fb_find_film(rating):
-    ''' replace the film ID by the first result of fb search on the tiltle '''
-    fields = {'q': rating.film.title + ' ' + rating.film.director, 'type': 'page'}
-    data = urllib.urlencode(fields)
-    result = urlfetch.fetch(url='http://graph.facebook.com/search?' + data)
-    if result.status_code == 200:
-        content = json.loads(result.content)
-        candidate_films = content['data']
-        for page in candidate_films:
-            if page['category'] == 'Movie':
-                rating.film.id = page['id']
-                break
-    else:
-        print(result.content)
+        values = {'list_imports': imported}
+        path = os.path.join(os.path.dirname(__file__), 'templates/imported.html')
+        self.response.out.write(template.render(path, values))
 
 
-def fb_post_rating(rating, access_token):
-    fb_find_film(rating)
+class ImdbImport(object):
+    def __init__(self, rating):
+        self.rating = rating
+        self.status = None
+        self.status_msg = ''
 
-    fields = {'access_token': access_token,
-              'method': 'POST',
-              'rating:value': rating.score,
-              'rating:scale': rating.scale,
-              'rating:normalized_value': rating.normalized_rating,
-              'movie': rating.film.id}
-    data = urllib.urlencode(fields)
-    print(data)
-    result = urlfetch.fetch(url='https://graph.facebook.com/me/video.rates',
-                            payload=data,
-                            method=urlfetch.POST,
-                            headers={'Content-Type': 'application/x-www-form-urlencoded'})
-    return result
+
+class ImdbLine(object):
+    def __init__(self, data):
+        # csv reader doesn't handle unicode natively
+        self.title = unicode(data[5].decode('UTF-8'))
+        self.director = unicode(data[7].decode('UTF-8'))
+        self.url = data[15]
+        self.score = float(data[8])
 
 
 class ImdbCsvReader(object):
@@ -88,9 +89,7 @@ class ImdbCsvReader(object):
 
     def next(self):
         data = self.csv.next()
-        film = Film(data[5], data[7], data[15])
-        rating = Rating(film, data[8])
-        return rating
+        return ImdbLine(data)
 
 
 if __name__ == '__main__':
@@ -102,5 +101,6 @@ if __name__ == '__main__':
     with open('test/film rating history.csv', 'r') as file:
         csv = ImdbCsvReader(file)
         for rating in csv:
-            fb_find_film(rating)
-            print('{rating} {url}'.format(rating=rating, url=rating.film.id))
+            fb.find_film(rating)
+            print('{rating} for {url} on fb #{fb_id}'.format(rating=rating, url=rating.film.imdb_url,
+                                                             fb_id=rating.film.fb_id))

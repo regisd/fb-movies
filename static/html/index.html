@@ -17,7 +17,8 @@
 <form id="process_form" method="post" action="/imdb" enctype="multipart/form-data">
     <label for="rating_history">Rating history (CSV export)</label>
     <input type="file" name="rating_history" id="rating_history"/>
-    <input type="hidden" id="access_token" name="access_token"/>
+    <input type="hidden" id="access_token" name="fb_access_token"/>
+    <input type="hidden" id="user_id" name="fb_user_id"/>
     <input type="submit"/>
 </form>
 
@@ -29,6 +30,7 @@
         // $("#fb_login_button").hide();
         $('#process_form').show();
         $('#access_token').attr('value', response['authResponse']['accessToken']);
+        $('#user_id').attr('value', response['authResponse'['userID']])
     }
 
     window.fbAsyncInit = function () {

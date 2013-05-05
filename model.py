@@ -3,29 +3,46 @@
 __author__ = "Régis Décamps"
 from datetime import datetime
 
+from google.appengine.ext import db
 
-class Film(object):
-    def __init__(self, title, director, id):
-        self.title = title
-        self.director = director
-        # can be the URL of an opengraph objector a fb id
-        self.id = id
-        self.time_length = 0
+class Film(db.Model):
+    title = db.StringProperty()
+    director = db.StringProperty()
+    fb_id = db.IntegerProperty()
+    imdb_url = db.URLProperty()
+    # Duration in min
+    time_length = db.IntegerProperty()
 
     def __str__(self):
         return self.title
 
+def build_Film(title, director, imdb_url):
+    film = Film()
+    film.title = title
+    film.director = director
+    film.imdb_url = imdb_url
+    film.time_length = 0
+    return film
 
-class Rating(object):
-    def __init__(self, film, rating, scale=10):
-        self.film = film
-        self.score = float(rating)
-        self.scale = scale
-        self.created_time = datetime.now()
 
-    @property
-    def normalized_rating(self):
-        return self.score / self.scale
+class Rating(db.Model):
+    user_id = db.IntegerProperty()
+    film = db.ReferenceProperty(Film)
+    score = db.FloatProperty()
+    scale = db.FloatProperty()
+    normalized_rating = db.FloatProperty()
+    created_time = db.DateTimeProperty(auto_now=True)
 
     def __str__(self):
-        return '{film} ({score}/{scale})'.format(film=self.film, score=self.score, scale=self.scale, norm_rating=self.normalized_rating)
+        return '{film} ({score}/{scale})'.format(film=self.film, score=self.score, scale=self.scale,
+                                                 norm_rating=self.normalized_rating)
+
+def build_Rating(fb_user_id,  film, score, scale=10.):
+    rating = Rating()
+    rating.user_id = fb_user_id
+    rating.film = film
+    rating.score = float(score)
+    rating.scale = scale
+    rating.created_time = datetime.now()
+    rating.normalized_rating = rating.score / rating.scale
+    return rating
