@@ -54,7 +54,7 @@ def post_rating(rating, access_token):
               'rating:value': rating.score,
               'rating:scale': rating.scale,
               'rating:normalized_value': rating.normalized_rating,
-              'review': 'http://fb-movies.appspot.com/rating/'+str(rating.key().id()),
+              #'review': 'http://fb-movies.appspot.com/rating/'+str(rating.key().id()),
               'movie': rating.film.fb_id if rating.film.fb_id else rating.film.imdb_url}
     data = urlencode_utf8(fields)
     result = urlfetch.fetch(url='https://graph.facebook.com/me/video.rates',

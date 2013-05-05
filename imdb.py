@@ -19,7 +19,7 @@ class ImdbImporter(webapp2.RequestHandler):
         rating_history_file = self.request.POST.multi['rating_history'].file
         fb_access_token = self.request.get('fb_access_token')
         fb_user_id = fb.get_user(fb_access_token)
-        logging.debug("Importing Ratings from {user}".format(user=fb_user_id))
+        logging.info("Importing Ratings from {user}".format(user=fb_user_id))
 
         csv = ImdbCsvReader(rating_history_file)
         self.response.headers['Content-Type'] = 'text/html; charset=UTF-8'
@@ -64,6 +64,7 @@ class ImdbImporter(webapp2.RequestHandler):
                     content = json.loads(response.content)
                     if 'error' in content:
                         error_msg = content.get('error').get('message')
+                        imp.status_msg = error_msg
                         logging.error(error_msg)
                 except Exception as e:
                     logging.error(content)
