@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
+from datetime import datetime
 
 __author__ = "Régis Décamps"
 import os
 import logging
+import locale
 import webapp2
 import csv
 import json
@@ -12,14 +14,15 @@ import fb
 from google.appengine.ext.webapp import template
 
 EXPECTED_FIRST_LINE = '"position","const","created","modified","description","Title","Title type","Directors","You rated","IMDb Rating","Runtime (mins)","Year","Genres","Num. Votes","Release Date (month/day/year)","URL"'
-
+IMDB_DATETIME_FMT = "%a %b %d %H:%M:%S %Y"
+locale.setlocale(locale.LC_ALL, 'C')
 
 class ImdbImporter(webapp2.RequestHandler):
     def post(self):
         rating_history_file = self.request.POST.multi['rating_history'].file
         fb_access_token = self.request.get('fb_access_token')
         fb_user_id = fb.get_user(fb_access_token)
-        logging.info("Importing Ratings from {user}".format(user=fb_user_id))
+        logging.info("Importing Ratings for {user}".format(user=fb_user_id))
 
         csv = ImdbCsvReader(rating_history_file)
         self.response.headers['Content-Type'] = 'text/html; charset=UTF-8'
@@ -29,17 +32,19 @@ class ImdbImporter(webapp2.RequestHandler):
             # search film in datastore
             film = model.Film.all().filter('imdb_url =', line.url).get()
             if film is None:
-                film = model.build_Film(line.title, line.director, line.url)
+                film = model.build_Film(line.title, line.director, line.runtime, line.url)
                 fb.find_film(film)
                 film.put()
 
             # find existing rating
             rating = model.Rating.all().filter('film = ', film).filter('user_id = ',fb_user_id).get()
             if not rating:
-                rating = model.build_Rating(fb_user_id, film, line.score)
+                rating = model.build_Rating(fb_user_id, film, line.score, line.created_time)
                 # save in datastore
                 rating.put()
 
+            # TODO approve app so that it can watch for the user
+            # fb.post_watch(rating, fb_access_token)
             response = fb.post_rating(rating, fb_access_token)
 
             imp = ImdbImport(rating)
@@ -88,7 +93,14 @@ class ImdbLine(object):
         self.director = unicode(data[7].decode('UTF-8'))
         self.url = data[15]
         self.score = float(data[8])
-
+        try:
+            self.created_time = datetime.strptime(data[2], IMDB_DATETIME_FMT)
+            logging.debug("created time {orig} parsed as {time}".format(orig=data[2], time=self.created_time))
+        except ValueError as e:
+            logging.warn("{exception} parsing {date}".format(exception=e, date=data[2]))
+            self.created_time = datetime.now()
+        # Runtime in min
+        self.runtime = int(data[10])
 
 class ImdbCsvReader(object):
     def __init__(self, file):

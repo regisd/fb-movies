@@ -5,6 +5,7 @@ from copy import copy
 __author__ = "Régis Décamps"
 import json
 import logging
+import datetime
 import urllib
 
 from google.appengine.api import urlfetch
@@ -54,6 +55,8 @@ def post_rating(rating, access_token):
               'rating:value': rating.score,
               'rating:scale': rating.scale,
               'rating:normalized_value': rating.normalized_rating,
+              'start_time': rating.created_time.isoformat(),
+              'expires_in': rating.film.runtime * 60,
               #'review': 'http://fb-movies.appspot.com/rating/'+str(rating.key().id()),
               'movie': rating.film.fb_id if rating.film.fb_id else rating.film.imdb_url}
     data = urlencode_utf8(fields)
@@ -76,7 +79,7 @@ def urlencode_utf8(params):
     Python27 urllib doesn't support unicode
     '''
     encoded_dict = {}
-    for k,v in params.items():
+    for k, v in params.items():
         if isinstance(v, basestring):
             encoded_dict[k] = v.encode('UTF-8')
         else:
