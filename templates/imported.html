@@ -9,12 +9,12 @@
     <link href="/pages/fbmovies.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-<p>These ratings will appear shortly on your Facebook timeline</p>
+<p>These ratings are currently being imported and will soon appear in <a
+        href="https://www.facebook.com/me/allactivity?log_filter=app_608738222470406">your Facebook timeline</a></p>
 <ul>
     {% for i in list_imports %}
-    <li><a href="{{i.rating.film.imdb_url}}">{{i.rating.film.title}}</a>
-        <a href="/rating/{{i.rating_id}}">{{i.rating.score}}/{{i.rating.scale}}</a>
-        <span class="{{i.status}}">{{i.status_msg}}</span>
+    <li><a href="{{i.url}}">{{i.title}}</a>
+        {{i.score}} /&nbsp;10</a>
     </li>
     {%endfor%}
 </ul>

@@ -8,82 +8,37 @@ import logging
 import locale
 import webapp2
 import csv
-import json
-import model
 import fb
 from google.appengine.ext.webapp import template
+from google.appengine.api import taskqueue
 
 EXPECTED_FIRST_LINE = '"position","const","created","modified","description","Title","Title type","Directors","You rated","IMDb Rating","Runtime (mins)","Year","Genres","Num. Votes","Release Date (month/day/year)","URL"'
 IMDB_DATETIME_FMT = "%a %b %d %H:%M:%S %Y"
 locale.setlocale(locale.LC_ALL, 'C')
 
+
 class ImdbImporter(webapp2.RequestHandler):
     def post(self):
         rating_history_file = self.request.POST.multi['rating_history'].file
         fb_access_token = self.request.get('fb_access_token')
+        # Done once here, rather than for each worker
         fb_user_id = fb.get_user(fb_access_token)
-        logging.info("Importing Ratings for {user}".format(user=fb_user_id))
+        logging.info("Importing Ratings for #{user}".format(user=fb_user_id))
 
         csv = ImdbCsvReader(rating_history_file)
         self.response.headers['Content-Type'] = 'text/html; charset=UTF-8'
         imported = []
 
         for line in csv:
-            # search film in datastore
-            film = model.Film.all().filter('imdb_url =', line.url).get()
-            if film is None:
-                film = model.build_Film(line.title, line.director, line.runtime, line.url)
-                fb.find_film(film)
-                film.put()
-
-            # find existing rating
-            rating = model.Rating.all().filter('film = ', film).filter('user_id = ',fb_user_id).get()
-            if not rating:
-                rating = model.build_Rating(fb_user_id, film, line.score, line.created_time)
-                # save in datastore
-                rating.put()
-
-            # TODO approve app so that it can watch for the user
-            # fb.post_watch(rating, fb_access_token)
-            response = fb.post_rating(rating, fb_access_token)
-
-            imp = ImdbImport(rating)
-            imported.append(imp)
-            if response.status_code == 200:
-                if not rating.film.imdb_url:
-                    imp.status = 'error'
-                    imp.status_msg = "Film not found on Facebook"
-                else:
-                    content = json.loads(response.content)
-                    if 'error' in content:
-                        imp.status = 'error'
-                        error_msg=content.get('error').get('message')
-                        imp.status_msg = error_msg
-                        logging.error(error_msg)
-                    else:
-                        imp.status = 'success'
-            else:
-                imp.status = 'error'
-                imp.status_msg = response.status_code
-                try:
-                    content = json.loads(response.content)
-                    if 'error' in content:
-                        error_msg = content.get('error').get('message')
-                        imp.status_msg = error_msg
-                        logging.error(error_msg)
-                except Exception as e:
-                    logging.error(content)
+            params = line.params()
+            params['fb_user_id'] = fb_user_id
+            params['fb_access_token'] = fb_access_token
+            task = taskqueue.Task(params=params, url='/worker')
+            task.add()
+            imported.append(line)
         values = {'list_imports': imported}
         path = os.path.join(os.path.dirname(__file__), 'templates/imported.html')
         self.response.out.write(template.render(path, values))
-
-
-class ImdbImport(object):
-    def __init__(self, rating):
-        self.rating = rating
-        self.status = None
-        self.status_msg = ''
-        self.rating_id = rating.key().id()
 
 
 class ImdbLine(object):
@@ -99,8 +54,20 @@ class ImdbLine(object):
         except ValueError as e:
             logging.warn("{exception} parsing {date}".format(exception=e, date=data[2]))
             self.created_time = datetime.now()
-        # Runtime in min
+            # Runtime in min
         self.runtime = int(data[10])
+
+    def params(self):
+        fields = {
+            'title': self.title,
+            'director': self.director,
+            'runtime': self.runtime,
+            'url': self.url,
+            'score': self.score,
+            'created_time': self.created_time.isoformat()
+        }
+        return fields
+
 
 class ImdbCsvReader(object):
     def __init__(self, file):
@@ -118,7 +85,7 @@ class ImdbCsvReader(object):
 
 
 if __name__ == '__main__':
-    from google.appengine.api import apiproxy_stub_map, urlfetch_stub
+    from google.appengine.api import apiproxy_stub_map, urlfetch_stub, taskqueue
 
     apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap()
     apiproxy_stub_map.apiproxy.RegisterStub('urlfetch',

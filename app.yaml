@@ -18,6 +18,10 @@ handlers:
 - url: /js
   static_dir: static/javascript
 
+- url: /worker
+  script: worker.app
+  login: admin
+
 - url: .*
   script: main.app
 

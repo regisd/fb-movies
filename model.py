@@ -6,6 +6,9 @@ from datetime import datetime
 from google.appengine.ext import db
 
 class Film(db.Model):
+    '''
+    A movie, probably known by Facebook
+    '''
     title = db.StringProperty()
     director = db.StringProperty()
     fb_id = db.IntegerProperty()
@@ -26,6 +29,9 @@ def build_Film(title, director, runtime, imdb_url):
 
 
 class Rating(db.Model):
+    '''
+    A rating in the application
+    '''
     user_id = db.IntegerProperty()
     film = db.ReferenceProperty(Film)
     score = db.FloatProperty()
