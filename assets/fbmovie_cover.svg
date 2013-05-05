@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="800"
+   height="150"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="fbmovie_cover.svg"
+   inkscape:export-filename="C:\Users\Regis\Desktop\fbmovie_cover.png"
+   inkscape:export-xdpi="87.096771"
+   inkscape:export-ydpi="87.096771">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3054"
+       inkscape:collect="always">
+      <stop
+         id="stop3056"
+         offset="0"
+         style="stop-color:#eeeeec;stop-opacity:1" />
+      <stop
+         id="stop3058"
+         offset="1"
+         style="stop-color:#888a85;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient3044">
+      <stop
+         style="stop-color:#babdb6;stop-opacity:1;"
+         offset="0"
+         id="stop3046" />
+      <stop
+         style="stop-color:#d3d7cf;stop-opacity:1"
+         offset="1"
+         id="stop3048" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3023"
+       inkscape:collect="always">
+      <stop
+         id="stop3025"
+         offset="0"
+         style="stop-color:#2e3436;stop-opacity:1" />
+      <stop
+         id="stop3027"
+         offset="1"
+         style="stop-color:#babdb6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2969">
+      <stop
+         style="stop-color:#555753;stop-opacity:1"
+         offset="0"
+         id="stop2971" />
+      <stop
+         style="stop-color:#babdb6;stop-opacity:1"
+         offset="1"
+         id="stop2973" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2957">
+      <stop
+         style="stop-color:#babdb6;stop-opacity:1"
+         offset="0"
+         id="stop2959" />
+      <stop
+         style="stop-color:#eeeeec;stop-opacity:1"
+         offset="1"
+         id="stop2961" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2931"
+       inkscape:collect="always">
+      <stop
+         id="stop2933"
+         offset="0"
+         style="stop-color:#d3d7cf;stop-opacity:1" />
+      <stop
+         id="stop2935"
+         offset="1"
+         style="stop-color:#d3d7cf;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2895">
+      <stop
+         style="stop-color:#3b5998;stop-opacity:1;"
+         offset="0"
+         id="stop2897" />
+      <stop
+         style="stop-color:#b2b9c9;stop-opacity:1;"
+         offset="1"
+         id="stop2899" />
+    </linearGradient>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective2884"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2895"
+       id="linearGradient3978"
+       gradientUnits="userSpaceOnUse"
+       x1="187.72591"
+       y1="493.48383"
+       x2="319.9718"
+       y2="336.32236" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2895"
+       id="linearGradient3980"
+       gradientUnits="userSpaceOnUse"
+       x1="-478.39554"
+       y1="919.15802"
+       x2="-478.39554"
+       y2="754.50311" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2957"
+       id="linearGradient3982"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.5,-12)"
+       x1="79"
+       y1="351.36218"
+       x2="315.15625"
+       y2="392.28125" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2931"
+       id="linearGradient3984"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-0.69364179,0.72032012,0,1,0,-172)"
+       x1="-478.38544"
+       y1="919.15314"
+       x2="-478.39554"
+       y2="754.50311" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3023"
+       id="linearGradient3986"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0.35355339,11.667262)"
+       x1="113.36396"
+       y1="305.10483"
+       x2="310"
+       y2="352.86218" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2957"
+       id="linearGradient3988"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1,-0.19852287,0,1.0170986,0.5,-28.416893)"
+       x1="79"
+       y1="351.36218"
+       x2="315.15625"
+       y2="392.28125" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2969"
+       id="linearGradient3990"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1,-0.19518548,0,1,1.3535534,0.620392)"
+       x1="35"
+       y1="296.87677"
+       x2="256"
+       y2="340.01279" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2931"
+       id="linearGradient3992"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-0.69364179,0.72032012,0,1,1.5,-243.5)"
+       x1="-478.38544"
+       y1="919.15314"
+       x2="-478.39554"
+       y2="754.50311" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3054"
+       id="linearGradient3994"
+       gradientUnits="userSpaceOnUse"
+       x1="91.5"
+       y1="302.86218"
+       x2="94.710091"
+       y2="348.36218" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3044"
+       id="linearGradient3996"
+       gradientUnits="userSpaceOnUse"
+       x1="75.5"
+       y1="304.73718"
+       x2="82.081703"
+       y2="344.73718" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="57.927127"
+     inkscape:cy="40.081081"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="838"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-71.84007,-424.56006)">
+    <image
+       y="188.77881"
+       x="67.840088"
+       id="image3147"
+       xlink:href="file:///C:/Users/Regis/workspace/fb-movies/assets/215839966_146da3302d_b.jpg"
+       height="564.78125"
+       width="848" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:0.93333333;stroke:none;font-family:Candara;-inkscape-font-specification:Candara"
+       x="209.65257"
+       y="496.93506"
+       id="text3150"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3152"
+         x="209.65257"
+         y="496.93506">Claim back your rating history</tspan><tspan
+         sodipodi:role="line"
+         x="209.65257"
+         y="546.93506"
+         id="tspan3154">and import it into your timeline</tspan></text>
+  </g>
+  <metadata
+     id="metadata3169">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+        <dc:publisher>
+          <cc:Agent
+             rdf:about="http://openclipart.org/">
+            <dc:title>Open Clip Art Library</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title></dc:title>
+        <dc:date>2010-11-08T20:47:22</dc:date>
+        <dc:description />
+        <dc:source>http://openclipart.org/detail/94693/movie-clapperboard-by-rg1024</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>rg1024</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>clapper-board</rdf:li>
+            <rdf:li>clip art</rdf:li>
+            <rdf:li>clipart</rdf:li>
+            <rdf:li>film</rdf:li>
+            <rdf:li>movie</rdf:li>
+            <rdf:li>scene slate</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>
