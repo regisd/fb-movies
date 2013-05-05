@@ -8,8 +8,10 @@
 <p>This ratings will appear shortly on your Facebook timeline</p>
 <ul>
     {% for i in list_imports %}
-    <li><a href="{{i.rating.film.imdb_url}}">{{i.rating.film.title}}</a> {{i.rating.score}}/{{i.rating.scale}} <span
-            class="{{i.status}}">{{i.status_msg}}</span></li>
+    <li><a href="{{i.rating.film.imdb_url}}">{{i.rating.film.title}}</a>
+        <a href="/rating/{{i.rating_id}}">{{i.rating.score}}/{{i.rating.scale}}</a>
+        <span class="{{i.status}}">{{i.status_msg}}</span>
+    </li>
     {%endfor%}
 </ul>
 

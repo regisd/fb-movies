@@ -44,7 +44,9 @@ class MainHandler(webapp2.RequestHandler):
 
 class RatingHandler(BaseHandler):
     def get(self, id):
+        id = long(id)
         rating = model.Rating.get_by_id(id)
+        logging.debug("Rating #{id} is {rating}".format(id=id, rating=rating))
         values = {"rating": rating}
         path = os.path.join(os.path.dirname(__file__), 'templates/rating.html')
         self.response.out.write(template.render(path, values))
@@ -53,7 +55,7 @@ class RatingHandler(BaseHandler):
 app = webapp2.WSGIApplication([
                                   ('/', MainHandler),
                                   ('/imdb', imdb.ImdbImporter),
-                                  webapp2.Route(r'/rating/<id:.*>', handler=RatingHandler)
+                                  webapp2.Route(r'/rating/<id:\d+>', handler=RatingHandler)
                               ], debug=True)
 
 logging.getLogger().setLevel(logging.DEBUG)

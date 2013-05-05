@@ -33,8 +33,15 @@ class ImdbImporter(webapp2.RequestHandler):
                 fb.find_film(film)
                 film.put()
 
-            rating = model.build_Rating(fb_user_id, film, line.score)
+            # find existing rating
+            rating = model.Rating.all().filter('film = ', film).filter('user_id = ',fb_user_id).get()
+            if not rating:
+                rating = model.build_Rating(fb_user_id, film, line.score)
+                # save in datastore
+                rating.put()
+
             response = fb.post_rating(rating, fb_access_token)
+
             imp = ImdbImport(rating)
             imported.append(imp)
             if response.status_code == 200:
@@ -49,8 +56,6 @@ class ImdbImporter(webapp2.RequestHandler):
                         imp.status_msg = error_msg
                         logging.error(error_msg)
                     else:
-                        # save in datastore
-                        rating.put()
                         imp.status = 'success'
             else:
                 imp.status = 'error'
@@ -72,6 +77,7 @@ class ImdbImport(object):
         self.rating = rating
         self.status = None
         self.status_msg = ''
+        self.rating_id = rating.key().id()
 
 
 class ImdbLine(object):

@@ -4,6 +4,23 @@
     <title>Rating</title>
 </head>
 <body>
+<h1>{{rating.film}}</h1>
+
 <p>{{rating.score}} / {{rating.scale}}</p>
+
+<p><a id="fb_page">Facebook page</a></p>
+
+<p><a href="{{rating.film.imdb_url}}">IMDb page</a></p>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#fb_page').hide();
+        $.getJSON("http://graph.facebook.com/{{rating.film.fb_id}}", function(response) {
+            var a=$('#fb_page');
+            a.attr('href',response['link']);
+            a.show();
+        });
+    });
+</script>
 </body>
 </html>
