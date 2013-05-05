@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html prefix="og: http://ogp.me/ns#">
 <head>
     <title>Rating</title>
+    <meta property="og:type" content="video.rates"/>
+    <meta property="fb:app_id" content="608738222470406"/>
+    <meta property="og:title" content="{{rating.film}}"/>
+    <meta property="og:site_name" content="Movie Importer"/>
+    <meta property="og:object" content="{{rating.film.fb_id}}"/>
+    <meta property="og:url" content="http://fb-movies.appspot.com/rating/{{id}}"/>
 </head>
 <body>
-<h1>{{rating.film}}</h1>
+<h1>Rating of {{rating.film}}</h1>
 
 <p>{{rating.score}} / {{rating.scale}}</p>
 
@@ -15,9 +21,9 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('#fb_page').hide();
-        $.getJSON("http://graph.facebook.com/{{rating.film.fb_id}}", function(response) {
-            var a=$('#fb_page');
-            a.attr('href',response['link']);
+        $.getJSON("http://graph.facebook.com/{{rating.film.fb_id}}", function (response) {
+            var a = $('#fb_page');
+            a.attr('href', response['link']);
             a.show();
         });
     });

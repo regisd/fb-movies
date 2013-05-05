@@ -47,7 +47,7 @@ class RatingHandler(BaseHandler):
         id = long(id)
         rating = model.Rating.get_by_id(id)
         logging.debug("Rating #{id} is {rating}".format(id=id, rating=rating))
-        values = {"rating": rating}
+        values = {'rating': rating, 'id': id}
         path = os.path.join(os.path.dirname(__file__), 'templates/rating.html')
         self.response.out.write(template.render(path, values))
 
