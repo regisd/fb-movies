@@ -5,6 +5,7 @@ from datetime import datetime
 
 from google.appengine.ext import db
 
+
 class Film(db.Model):
     '''
     A movie, probably known by Facebook
@@ -18,6 +19,7 @@ class Film(db.Model):
 
     def __str__(self):
         return self.title
+
 
 def build_Film(title, director, runtime, imdb_url):
     film = Film()
@@ -38,12 +40,15 @@ class Rating(db.Model):
     scale = db.IntegerProperty()
     normalized_rating = db.FloatProperty()
     created_time = db.DateTimeProperty()
+    # The id of the og object if it was already submitted
+    activity_id = db.IntegerProperty()
 
     def __str__(self):
         return '{film} ({score}/{scale})'.format(film=self.film, score=self.score, scale=self.scale,
                                                  norm_rating=self.normalized_rating)
 
-def build_Rating(fb_user_id,  film, score, created_time, scale=10):
+
+def build_Rating(fb_user_id, film, score, created_time, scale=10):
     rating = Rating()
     rating.user_id = fb_user_id
     rating.film = film

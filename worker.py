@@ -6,6 +6,8 @@ import logging
 import webapp2
 import fb
 import model
+import json
+
 from datetime import datetime
 
 DATETIME_ISO = '%Y-%m-%dT%H:%M:%S'
@@ -42,16 +44,21 @@ class ImportWorker(webapp2.RequestHandler):
         # fb.post_watch(rating, fb_access_token)
         response = fb.post_rating(rating, fb_access_token)
 
-        if response.status_code != 200:
-            try:
-                import json
-
-                content = json.loads(response.content)
-                if 'error' in content:
-                    error_msg = content.get('error').get('message')
-                    logging.error(error_msg)
-            except Exception as e:
-                logging.error(content)
+        try:
+            content = json.loads(response.content)
+            if u'error' in content:
+                error_msg = content.get('error').get('message')
+                logging.error("Worker encounters error " + error_msg)
+            elif u'id' in content:
+                # update rating with the activity id
+                rating.activity_id = long(content.get('id'))
+                rating.put()
+                logging.debug("Worker has updated rating with OpenGraph #{id}".format(id=rating.activity_id))
+            else:
+                logging.error("Worker has unexpected response " + response.content)
+        except Exception as e:
+            logging.error("Worker unexpected exception {exception} with response: {response}".format(exception=e,
+                                                                                                     response=response.content))
 
 
 app = webapp2.WSGIApplication([

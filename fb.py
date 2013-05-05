@@ -61,12 +61,16 @@ def post_rating(rating, access_token):
               'movie': rating.film.fb_id if rating.film.fb_id else rating.film.imdb_url,
               'publish_time': rating.created_time.isoformat()}
     data = urlencode_utf8(fields)
-    result = urlfetch.fetch(url='https://graph.facebook.com/me/video.rates',
+    if rating.activity_id:
+        url = 'https://graph.facebook.com/' + rating.activity_id
+    else:
+        url = 'https://graph.facebook.com/me/video.rates'
+    result = urlfetch.fetch(url=url,
                             payload=data,
                             method=urlfetch.POST,
                             headers={'Content-Type': 'application/x-www-form-urlencoded'})
     logging.debug("Result {status} for video.rates {data}".format(status=result.status_code, data=fields))
-    if result.status_code != 200:
+    if result.status_code != 200 and result.status_code != 201: # http OK and http CREATED
         logging.error(data)
         logging.error(result.content)
     return result
@@ -86,7 +90,7 @@ def post_watch(rating, access_token):
                             method=urlfetch.POST,
                             headers={'Content-Type': 'application/x-www-form-urlencoded'})
     logging.debug("Result {status} for video.watches {data}".format(status=result.status_code, data=fields))
-    if result.status_code != 200:
+    if result.status_code != 200 and result.status_code != 201: # http OK and http CREATED
         logging.error(data)
         logging.error(result.content)
     return result
